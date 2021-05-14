@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import SafariServices
 
 class ViewController: UIViewController , UITableViewDelegate , UITableViewDataSource {
     
     private var viewModels = [NewsTableViewCellViewModel]()
- 
+    private var articles = [Articles]()
     private let tableView : UITableView  = {
         let table = UITableView()
         table.register(NewsTableViewCell.self, forCellReuseIdentifier: NewsTableViewCell.identifier)
@@ -32,7 +33,9 @@ class ViewController: UIViewController , UITableViewDelegate , UITableViewDataSo
         
         WebService.shared.getNewsStories { [weak self] result in
             switch result {
+            
             case .success(let articles):
+                self?.articles = articles
                 self?.viewModels = articles.compactMap({
                     NewsTableViewCellViewModel(title: $0.title ?? "",
                                                subtitle: $0.description ?? "", imageURL: URL(string: $0.urlToImage ?? ""))
@@ -66,6 +69,13 @@ class ViewController: UIViewController , UITableViewDelegate , UITableViewDataSo
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let article = articles[indexPath.row]
+        
+        guard let url = URL(string: article.url ?? "") else {
+            return
+        }
+        let vc = SFSafariViewController(url: url )
+        present(vc, animated: true)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150

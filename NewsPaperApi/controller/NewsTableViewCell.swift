@@ -73,6 +73,10 @@ class NewsTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        newsImageView.image = nil
+        newsTitleLabel.text = nil
+        subtitleLabel.text = nil
+
     }
     
     func configure(with viewModel : NewsTableViewCellViewModel) {
